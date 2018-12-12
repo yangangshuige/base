@@ -1,0 +1,69 @@
+apply plugin: 'com.android.application'
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+    defaultConfig {
+        applicationId rootProject.ext.android.applicationId
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs {
+        release {
+            storeFile file(rootProject.ext.keyStore.storeFile)
+            keyAlias rootProject.ext.keyStore.keyAlias
+            storePassword rootProject.ext.keyStore.storePassword
+            keyPassword rootProject.ext.keyStore.keyPassword
+        }
+        debug {
+            storeFile file(rootProject.ext.keyStore.storeFile)
+            keyAlias rootProject.ext.keyStore.keyAlias
+            storePassword rootProject.ext.keyStore.storePassword
+            keyPassword rootProject.ext.keyStore.keyPassword
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.release
+            buildConfigField 'boolean', 'LOG_FLAG', 'true'
+            buildConfigField 'String', 'BASE_URL', '"https://39.108.71.4/front"'
+        }
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField 'boolean', 'LOG_FLAG', 'false'
+            buildConfigField 'String', 'BASE_URL', '"https://39.108.71.4/front"'
+        }
+
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            //定义apk名字
+            def formatedDate = new Date().format("yyyyMMddHHmm")
+            def apkFileName = "base-v${android.defaultConfig.versionCode}_${formatedDate}.apk"
+            outputFileName = apkFileName
+        }
+    }
+    configurations.all {
+        resolutionStrategy.force 'com.android.support:support-annotations:26.1.0'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    //    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    api rootProject.ext.dependencies["butterknife"]
+    annotationProcessor rootProject.ext.dependencies["butterknife-compiler"]
+    implementation project(':baselibrary')
+}
+
+
