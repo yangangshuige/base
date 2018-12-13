@@ -3,7 +3,13 @@
     package="com.base.library">
 
     <application>
-        <activity android:name=".activity.TestActivity"></activity>
+        <activity android:name=".activity.TestActivity">
+            <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
